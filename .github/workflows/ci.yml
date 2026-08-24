@@ -1,0 +1,22 @@
+name: Blue-Green CI
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+
+permissions:
+  contents: read
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+      - name: Validate repository
+        run: bash tests/test_project.sh
+      - name: Validate Kubernetes manifests
+        uses: instrumenta/kubeval-action@master
+        continue-on-error: false
+        with:
+          files: k8s/blue.yaml,k8s/green.yaml,k8s/service.yaml
